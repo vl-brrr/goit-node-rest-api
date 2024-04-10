@@ -11,10 +11,7 @@ export const getAllContacts = async (req, res) => {
   try {
     const contacts = await listContacts();
 
-    res.status(200).json({
-      msg: "success!",
-      contacts,
-    });
+    res.status(200).send(contacts);
   } catch (err) {
     console.log(err.message);
   }
@@ -26,10 +23,7 @@ export const getOneContact = async (req, res) => {
     const contact = await getContactById(id);
 
     if (contact !== null) {
-      res.status(200).json({
-        msg: "success!",
-        contact,
-      });
+      res.status(200).json(contact);
     } else {
       res.status(404).json({ msg: "Not found" });
     }
@@ -44,10 +38,7 @@ export const deleteContact = async (req, res) => {
     const contact = await removeContact(id);
 
     if (contact !== null) {
-      res.status(200).json({
-        msg: "success!",
-        contact,
-      });
+      res.status(200).json(contact);
     } else {
       res.status(404).json({ msg: "Not found" });
     }
@@ -61,10 +52,7 @@ export const createContact = async (req, res) => {
     const { value } = createContactSchema.validate(req.body);
 
     const contact = await addContact(value);
-    res.status(201).json({
-      msg: "success!",
-      contact,
-    });
+    res.status(201).json(contact);
   } catch (err) {
     console.log(err.message);
   }
@@ -79,10 +67,7 @@ export const updateContact = async (req, res) => {
     const contact = await getContactById(id);
     if (contact !== null) {
       const updatedContact = await updateContactById(id, req.body);
-      res.status(200).json({
-        msg: "success!",
-        updatedContact,
-      });
+      res.status(200).json(updatedContact);
     } else {
       res.status(404).json({ msg: "Not found" });
     }
