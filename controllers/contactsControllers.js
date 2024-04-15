@@ -75,3 +75,18 @@ export const updateContact = async (req, res) => {
     console.log(err.message);
   }
 };
+
+export const updateStatusContact = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const contact = await getContactById(id);
+    if (contact !== null) {
+      const updatedContact = await updateContactById(id, req.body);
+      res.status(200).json(updatedContact);
+    } else {
+      res.status(404).json({ msg: "Not found" });
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
