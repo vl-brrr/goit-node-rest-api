@@ -30,19 +30,14 @@ async function removeContact(contactId) {
 
 async function addContact({ name, email, phone }) {
   try {
-    const existedContact = await Contact.findOne({ phone: phone });
+    const newContact = await Contact.create({
+      id: nanoid(),
+      name: name,
+      email: email,
+      phone: phone,
+    });
 
-    if (!existedContact) {
-      const newContact = await Contact.create({
-        id: nanoid(),
-        name: name,
-        email: email,
-        phone: phone,
-      });
-
-      return newContact;
-    }
-    return "There is already a contact with such a phone number.";
+    return newContact;
   } catch (err) {
     console.log(err);
   }
