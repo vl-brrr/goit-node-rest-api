@@ -7,7 +7,7 @@ const checkContactId = async (req, res, next) => {
 
     const idIsValid = Types.ObjectId.isValid(id);
 
-    if (!idIsValid) throw new HttpError(404, "Not found..");
+    if (!idIsValid) next(HttpError(404));
 
     next();
   } catch (err) {
