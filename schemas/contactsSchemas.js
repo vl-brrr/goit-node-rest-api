@@ -16,3 +16,7 @@ export const updateContactSchema = Joi.object({
     .length(14)
     .pattern(/^[(]+[0-9]{3}[)]+[ ]+[0-9]{3}[-]+[0-9]{4}$/),
 });
+
+export const updateStatusContactSchema = Joi.object({
+  favorite: Joi.boolean().required(),
+});
