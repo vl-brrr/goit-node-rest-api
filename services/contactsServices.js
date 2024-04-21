@@ -1,52 +1,71 @@
-import { nanoid } from "nanoid";
 import { Contact } from "../models/contactModel.js";
 
-async function listContacts() {
+async function listContacts(query, currentUser) {
   try {
-    const contacts = await Contact.find();
+    const findOptions = {};
+
+    if (query.favorite) {
+      findOptions.favorite = query.favorite;
+    }
+
+    const contactsQuery = Contact.find({
+      ...findOptions,
+      owner: currentUser.id,
+    });
+    // console.log(contactsQuery._conditions);
+    const page = query.page ? +query.page : 1;
+    const limit = query.limit ? +query.limit : 20;
+    const docsToSkip = (page - 1) * limit;
+
+    contactsQuery.skip(docsToSkip).limit(limit);
+
+    const contacts = await contactsQuery;
     return contacts;
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 }
 
-async function getContactById(contactId) {
+async function getContactById(contactId, owner) {
   try {
-    const contact = await Contact.findOne({ _id: contactId });
+    const contact = await Contact.findOne({ _id: contactId, owner: owner.id });
     return contact;
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 }
 
-async function removeContact(contactId) {
+async function removeContact(contactId, owner) {
   try {
-    const contact = await Contact.findByIdAndDelete({ _id: contactId });
+    const contact = await Contact.findByIdAndDelete({
+      _id: contactId,
+      owner: owner.id,
+    });
     return contact;
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 }
 
-async function addContact({ name, email, phone }) {
+async function addContact({ name, email, phone }, owner) {
   try {
     const newContact = await Contact.create({
-      id: nanoid(),
       name: name,
       email: email,
       phone: phone,
+      owner: owner.id,
     });
 
     return newContact;
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 }
 
-async function updateContactById(contactId, updatedData) {
+async function updateContactById(contactId, updatedData, owner) {
   try {
     const updatedContact = await Contact.findByIdAndUpdate(
-      { _id: contactId },
+      { _id: contactId, owner: owner.id },
       updatedData,
       {
         new: true,
@@ -54,7 +73,7 @@ async function updateContactById(contactId, updatedData) {
     );
     return updatedContact;
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 }
 

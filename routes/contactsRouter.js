@@ -15,8 +15,11 @@ import {
   updateContactSchema,
   updateStatusContactSchema,
 } from "../schemas/contactsSchemas.js";
+import { checkToken } from "../middlewares/authMiddlewares.js";
 
 const contactsRouter = express.Router();
+
+contactsRouter.use(checkToken);
 
 contactsRouter.get("/", getAllContacts);
 
