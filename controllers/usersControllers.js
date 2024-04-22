@@ -7,7 +7,7 @@ import {
 export const createAndRegisterUser = async (req, res, next) => {
   try {
     const newUser = await createAndRegisterUserService(req.body);
-    res.status(201).json({
+    res.status(200).json({
       user: { email: newUser.email, subscription: newUser.subscription },
     });
   } catch (err) {
@@ -19,7 +19,7 @@ export const loginUser = async (req, res, next) => {
   try {
     const user = await loginUserService(req.body);
 
-    res.status(201).json({
+    res.status(200).json({
       token: user.token,
       user: { email: user.email, subscription: user.subscription },
     });
@@ -30,8 +30,8 @@ export const loginUser = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
   try {
-    await updateUserById(req.user.id, { token: null });
-    res.status(204);
+    const updatedUser = await updateUserById(req.user.id, { token: null });
+    res.status(204).send();
   } catch (err) {
     next(err);
   }

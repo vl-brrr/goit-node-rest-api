@@ -11,7 +11,7 @@ export const registerDataCheck = async (req, res, next) => {
     const { value, error } = registerUserDataSchema.validate(req.body);
 
     if (error) {
-      throw HttpError(404, "Помилка від Joi або іншої бібліотеки валідації");
+      throw HttpError(400, "Помилка від Joi або іншої бібліотеки валідації");
     }
 
     const userExists = await ifUserExistsService({ email: value.email });
@@ -31,7 +31,7 @@ export const loginDataCheck = async (req, res, next) => {
     const { value, error } = registerUserDataSchema.validate(req.body);
 
     if (error)
-      next(HttpError(404, "Помилка від Joi або іншої бібліотеки валідації"));
+      next(HttpError(400, "Помилка від Joi або іншої бібліотеки валідації"));
 
     next();
   } catch (err) {

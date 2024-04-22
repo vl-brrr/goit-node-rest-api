@@ -63,7 +63,6 @@ async function loginUserService({ email, password }) {
       throw HttpError(401, "Email or password is wrong");
     }
     const token = signToken(user.id);
-    console.log(token);
 
     const userWithToken = await User.findByIdAndUpdate(
       { _id: user.id },
@@ -72,7 +71,6 @@ async function loginUserService({ email, password }) {
         new: true,
       }
     );
-    console.log(userWithToken);
 
     userWithToken.password = undefined;
     return userWithToken;

@@ -37,7 +37,7 @@ async function getContactById(contactId, owner) {
 
 async function removeContact(contactId, owner) {
   try {
-    const contact = await Contact.findByIdAndDelete({
+    const contact = await Contact.findOneAndDelete({
       _id: contactId,
       owner: owner.id,
     });
@@ -64,7 +64,7 @@ async function addContact({ name, email, phone }, owner) {
 
 async function updateContactById(contactId, updatedData, owner) {
   try {
-    const updatedContact = await Contact.findByIdAndUpdate(
+    const updatedContact = await Contact.findOneAndUpdate(
       { _id: contactId, owner: owner.id },
       updatedData,
       {
