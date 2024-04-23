@@ -12,7 +12,6 @@ async function listContacts(query, currentUser) {
       ...findOptions,
       owner: currentUser.id,
     });
-    // console.log(contactsQuery._conditions);
     const page = query.page ? +query.page : 1;
     const limit = query.limit ? +query.limit : 20;
     const docsToSkip = (page - 1) * limit;

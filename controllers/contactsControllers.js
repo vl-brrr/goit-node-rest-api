@@ -10,12 +10,9 @@ import { createContactSchema } from "../schemas/contactsSchemas.js";
 export const getAllContacts = async (req, res, next) => {
   try {
     const contacts = await listContacts(req.query, req.user);
+    console.log(contacts);
 
-    if (contacts.owner.toString() === req.user.id) {
-      res.status(200).send(contacts);
-    } else {
-      res.status(404).json({ msg: "Not found" });
-    }
+    res.status(200).send(contacts);
   } catch (err) {
     next(err);
   }

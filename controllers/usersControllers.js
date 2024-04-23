@@ -7,7 +7,7 @@ import {
 export const createAndRegisterUser = async (req, res, next) => {
   try {
     const newUser = await createAndRegisterUserService(req.body);
-    res.status(200).json({
+    res.status(201).json({
       user: { email: newUser.email, subscription: newUser.subscription },
     });
   } catch (err) {
