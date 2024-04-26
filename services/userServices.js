@@ -2,6 +2,10 @@ import { User } from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import HttpError from "../helpers/HttpError.js";
+import { nanoid } from "nanoid";
+import path from "path";
+import Jimp from "jimp";
+import fs from "fs";
 
 function signToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -90,6 +94,28 @@ async function checkTokenService(token) {
   }
 }
 
+async function updateAvatarService(user, file) {
+  try {
+    if (file) {
+      const fileName = `${user.id}-${nanoid()}.jpeg`;
+      const fullFilePath = path.join(process.cwd(), "public", "avatars");
+
+      const avatar = await Jimp.read(file.path);
+
+      await avatar
+        .cover(250, 250)
+        .quality(90)
+        .writeAsync(path.join(fullFilePath, fileName));
+
+      fs.unlinkSync(file.path);
+      user.avatarURL = path.join("avatars", fileName);
+    }
+    return user.save();
+  } catch (err) {
+    throw err;
+  }
+}
+
 export {
   ifUserExistsService,
   createAndRegisterUserService,
@@ -97,4 +123,5 @@ export {
   checkTokenService,
   getUserByIdService,
   updateUserById,
+  updateAvatarService,
 };

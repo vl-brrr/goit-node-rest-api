@@ -2,6 +2,7 @@ import {
   createAndRegisterUserService,
   loginUserService,
   updateUserById,
+  updateAvatarService,
 } from "../services/userServices.js";
 
 export const createAndRegisterUser = async (req, res, next) => {
@@ -51,6 +52,18 @@ export const subscriptionUpdate = async (req, res, next) => {
     res.status(200).json({
       email: updatedUser.email,
       subscription: updatedUser.subscription,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const updatedUser = await updateAvatarService(req.user, req.file);
+
+    res.status(200).json({
+      avatarURL: updatedUser.avatarURL,
     });
   } catch (err) {
     next(err);

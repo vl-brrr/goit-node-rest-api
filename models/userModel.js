@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import bcrypt from "bcrypt";
+import gravatar from "gravatar";
 
 import { subscriptionTypes } from "../constants/subscriptionTypes.js";
 
@@ -19,6 +20,7 @@ const userSchema = new Schema(
       enum: Object.values(subscriptionTypes),
       default: "starter",
     },
+    avatarURL: String,
     token: {
       type: String,
       default: null,
@@ -31,6 +33,14 @@ const userSchema = new Schema(
 );
 
 userSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    this.avatarURL = gravatar.url(
+      this.email,
+      { s: "100", r: "x", d: "retro" },
+      true
+    );
+  }
+
   if (!this.isModified("password")) return next();
 
   const salt = await bcrypt.genSalt(10);
