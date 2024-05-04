@@ -13,9 +13,14 @@ import {
   getCurrentUser,
   subscriptionUpdate,
   updateAvatar,
+  checkVerificationToken,
+  sendVerificationLetter,
 } from "../controllers/usersControllers.js";
 import validateBody from "../helpers/validateBody.js";
-import { subscriptionUserUpdateSchema } from "../schemas/usersSchema.js";
+import {
+  subscriptionUserUpdateSchema,
+  sendVerificationLetterSchema,
+} from "../schemas/usersSchema.js";
 
 const usersRouter = express.Router();
 
@@ -30,5 +35,11 @@ usersRouter.patch(
   subscriptionUpdate
 );
 usersRouter.patch("/avatars", checkToken, imageInitialUpload, updateAvatar);
+usersRouter.get("/verify/:verificationToken", checkVerificationToken);
+usersRouter.post(
+  "/verify",
+  validateBody(sendVerificationLetterSchema),
+  sendVerificationLetter
+);
 
 export default usersRouter;
