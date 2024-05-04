@@ -18,3 +18,7 @@ export const subscriptionUserUpdateSchema = Joi.object({
     .valid(...Object.values(subscriptionTypes))
     .required(),
 });
+
+export const sendVerificationLetterSchema = Joi.object({
+  email: Joi.string().email().required(),
+});

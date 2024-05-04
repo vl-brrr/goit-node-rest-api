@@ -6,6 +6,7 @@ import { nanoid } from "nanoid";
 import path from "path";
 import Jimp from "jimp";
 import fs from "fs";
+import nodemailer from "nodemailer";
 
 function signToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -24,7 +25,10 @@ async function ifUserExistsService(filter) {
 
 async function createAndRegisterUserService(userData) {
   try {
-    const newUser = await User.create(userData);
+    const newUser = await User.create({
+      ...userData,
+      verificationToken: nanoid(),
+    });
     newUser.password = undefined;
     return newUser;
   } catch (err) {
@@ -60,6 +64,10 @@ async function loginUserService({ email, password }) {
     const user = await User.findOne({ email });
     if (!user) {
       throw HttpError(401, "Email or password is wrong");
+    }
+
+    if (!user.verify) {
+      throw HttpError(403, "Email is not verified");
     }
 
     const passwordIsValid = await bcrypt.compare(password, user.password);
@@ -116,6 +124,44 @@ async function updateAvatarService(user, file) {
   }
 }
 
+async function findUser(userData) {
+  try {
+    const user = await User.findOne(userData);
+    if (!user) throw HttpError(404);
+
+    return user;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function sendVefiryEmail(user) {
+  try {
+    const config = {
+      host: process.env.UKRNET_HOST,
+      port: +process.env.UKRNET_PORT,
+      secure: true,
+      auth: {
+        user: process.env.UKRNET_USER,
+        pass: process.env.UKRNET_PASS,
+      },
+    };
+
+    const transporter = nodemailer.createTransport(config);
+    const emailOptions = {
+      from: process.env.UKRNET_USER,
+      to: user.email,
+      subject: "Veryfication email",
+      text: `Верифікувати почтову скриньку: http://localhost:${+process.env
+        .PORT}/api/users/verify/${user.verificationToken}`,
+    };
+
+    transporter.sendMail(emailOptions);
+  } catch (err) {
+    throw err;
+  }
+}
+
 export {
   ifUserExistsService,
   createAndRegisterUserService,
@@ -124,4 +170,6 @@ export {
   getUserByIdService,
   updateUserById,
   updateAvatarService,
+  findUser,
+  sendVefiryEmail,
 };

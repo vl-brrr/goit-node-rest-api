@@ -38,6 +38,6 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
-app.listen(3000, () => {
+app.listen(+process.env.PORT, () => {
   console.log("Server is running. Use our API on port: 3000");
 });

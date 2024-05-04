@@ -3,11 +3,14 @@ import {
   loginUserService,
   updateUserById,
   updateAvatarService,
+  findUser,
+  sendVefiryEmail,
 } from "../services/userServices.js";
 
 export const createAndRegisterUser = async (req, res, next) => {
   try {
     const newUser = await createAndRegisterUserService(req.body);
+    await sendVefiryEmail(newUser);
     res.status(201).json({
       user: { email: newUser.email, subscription: newUser.subscription },
     });
@@ -65,6 +68,38 @@ export const updateAvatar = async (req, res, next) => {
     res.status(200).json({
       avatarURL: updatedUser.avatarURL,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const checkVerificationToken = async (req, res, next) => {
+  try {
+    const { verificationToken } = req.params;
+    const user = await findUser({ verificationToken });
+
+    if (user) {
+      const verifiedUser = await updateUserById(user.id, {
+        verificationToken: null,
+        verify: true,
+      });
+      res.status(200).json({ message: "Verification successful" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+export const sendVerificationLetter = async (req, res, next) => {
+  try {
+    const user = await findUser(req.body);
+    if (!user.verify) {
+      await sendVefiryEmail(user);
+      res.status(200).json({ message: "Verification email sent" });
+    } else {
+      res.status(400).json({ message: "Verification has already been passed" });
+    }
   } catch (err) {
     next(err);
   }
